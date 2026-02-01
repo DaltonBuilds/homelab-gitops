@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: grafana.lab.daltonbuilds.com
+    - host: grafana.daltonbuilds.com
       http:
         paths:
           - path: /
