@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: prometheus.192.168.40.240.nip.io
+    - host: prometheus.daltonbuilds.com
       http:
         paths:
           - path: /

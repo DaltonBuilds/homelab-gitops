@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: alertmanager.192.168.40.240.nip.io
+    - host: alertmanager.daltonbuilds.com
       http:
         paths:
           - path: /
