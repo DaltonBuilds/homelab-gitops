@@ -8,14 +8,25 @@ spec:
   source:
     repoURL: https://prometheus-community.github.io/helm-charts
     chart: kube-prometheus-stack
-    targetRevision: 58.6.0
+    targetRevision: 81.3.2
     helm:
-      valueFiles:
-        - $values/apps/monitoring/values.yaml
-  sources:
-    - repoURL: https://github.com/DaltonBuilds/homelab-gitops.git 
-      targetRevision: main
-      ref: values
+      valuesObject:
+        grafana:
+          enabled: true
+          adminPassword: "admin"
+          service:
+            type: ClusterIP
+        prometheus:
+          prometheusSpec:
+            retention: 7d
+        alertmanager:
+          enabled: true
+        kubeEtcd:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
@@ -25,3 +36,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
