@@ -4,7 +4,7 @@ metadata:
   name: monitoring-crds
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-2"
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   source:
@@ -16,8 +16,9 @@ spec:
     namespace: kube-system
   syncPolicy:
     automated:
-      prune: false
+      prune: true
       selfHeal: true
     syncOptions:
-      - serverSideApply=true
-
+      - Replace=true
+      - ServerSideApply=true
+      - ApplyOutOfSyncOnly=true
