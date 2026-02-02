@@ -10,6 +10,7 @@ spec:
     chart: kube-prometheus-stack
     targetRevision: 81.3.2
     helm:
+      skipCrds: true
       valuesObject:
         grafana:
           enabled: true
