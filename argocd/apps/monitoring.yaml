@@ -13,6 +13,8 @@ spec:
     targetRevision: 81.3.2
     helm:
       skipCrds: true
+      crds:
+        enabled: false
       valuesObject:
         grafana:
           enabled: true
