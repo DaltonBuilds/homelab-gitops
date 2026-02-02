@@ -17,10 +17,16 @@ spec:
           service:
             type: ClusterIP
         prometheus:
+          enabled: true
           prometheusSpec:
             retention: 7d
+            storageSpec:
+              emptyDir: {}
         alertmanager:
           enabled: true
+          alertmanagerSpec: 
+          storage:
+            emptyDir: {}
         kubeEtcd:
           enabled: false
         kubeControllerManager:
