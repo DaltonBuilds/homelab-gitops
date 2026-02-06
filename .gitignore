@@ -1,4 +1,63 @@
+# --- Project Specific Secrets ---
+# Specific file for n8n local secrets
+05-secrets.yaml
+*secrets.yaml
+**/*secrets.yaml
+**/*secrets*.yaml
+
+# Allow example templates
+!*secrets.example.yaml
+!*Secrets.example.yaml
+
+# General environment variables
+.env
+*.env
+*.secret
+*.key
+
+# --- Kubernetes & K3s ---
+# Local kubeconfig and cluster tokens
+.kube/
+kubeconfig*
+k3s.yaml
+node-token
+
+# --- Monitoring (Prometheus/Grafana) ---
+# Ignore local data storage for monitoring tools
+data/
+prometheus_data/
+grafana_data/
+*.db
+*.sqlite
+
+# --- GitOps Tools (ArgoCD) ---
+# Ignore local helm charts or temporary kustomize builds
+charts/
+vendor/
+.argo-source-*
+
+# --- Terraform  ---
+# Ignore state files and provider binaries
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+
+# --- General / OS / IDE ---
+# System files
 .DS_Store
-*.swp
-.idea/
+Thumbs.db
+
+# IDEs
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
