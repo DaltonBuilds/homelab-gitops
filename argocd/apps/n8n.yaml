@@ -11,7 +11,7 @@ spec:
     path: apps/n8n
   destination:
     server: https://kubernetes.default.svc
-    namespace: n8n
+    namespace: apps
   syncPolicy:
     automated:
       prune: true

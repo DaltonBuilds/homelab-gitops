@@ -1,18 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nginx
+  name: uptime-kuma
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/DaltonBuilds/homelab-gitops
     targetRevision: main
-    path: apps/nginx
+    path: apps/uptime-kuma
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: apps
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      -CreateNamespace=true
