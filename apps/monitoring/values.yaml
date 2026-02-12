@@ -1,6 +1,6 @@
 grafana:
   enabled: true
-  adminPassword: "admin"   
+  adminPassword: "admin"
   service:
     type: ClusterIP
 

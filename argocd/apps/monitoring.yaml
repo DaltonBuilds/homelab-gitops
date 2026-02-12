@@ -7,37 +7,16 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
-  source:
+  sources:
     repoURL: https://prometheus-community.github.io/helm-charts
     chart: kube-prometheus-stack
     targetRevision: 81.3.2
     helm:
-      skipCrds: true
-      crds:
-        enabled: false
-      valuesObject:
-        grafana:
-          enabled: true
-          adminPassword: "admin"
-          service:
-            type: ClusterIP
-        prometheus:
-          enabled: true
-          prometheusSpec:
-            retention: 7d
-            storageSpec:
-              emptyDir: {}
-        alertmanager:
-          enabled: true
-          alertmanagerSpec: 
-          storage:
-            emptyDir: {}
-        kubeEtcd:
-          enabled: false
-        kubeControllerManager:
-          enabled: false
-        kubeScheduler:
-          enabled: false
+      valueFiles:
+        - $myrepo/apps/monitoring/values.yaml
+    - repoURL: https://github.com/DaltonBuilds/homelab-gitops
+      targetRevision: main
+      ref: myrepo
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
