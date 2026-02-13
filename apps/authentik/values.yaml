@@ -1,0 +1,25 @@
+authentik:
+  secret_key: "dklHJK*^3jkfvnks*(==(&3kvdnioksngefdgoKHSDlkcfgkvjLKSbfdmj!76$I&^@!"
+  error_reporting:
+    enabled: false
+  postgresql:
+    password: "adminAuthentikPass"
+
+postgresql:
+  enabled: true
+  auth:
+    password: "adminAuthentikPass"
+  persistence:
+    enabled: true
+    storageClass: "nfs-zfs"
+    size: 8Gi
+
+  redis:
+    enabled: true
+
+server:
+  ingress:
+    enabled: true
+    ingressClassName: "traefik"
+    hosts:
+      - auth.daltonbuilds.com
