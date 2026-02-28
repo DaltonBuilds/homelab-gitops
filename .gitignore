@@ -4,6 +4,10 @@
 *secrets.yaml
 **/*secrets.yaml
 **/*secrets*.yaml
+!apps/external-secrets/cluster-secret-store.yaml
+!apps/external-secrets/external-secrets.yaml
+!argocd/apps/external-secrets-store.yaml
+!argocd/apps/external-secrets.yaml
 
 # Allow example templates
 !*secrets.example.yaml
