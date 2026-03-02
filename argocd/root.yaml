@@ -4,7 +4,7 @@ metadata:
   name: homelab
   namespace: argocd
 spec:
-  project: default
+  project: homelab
   source:
     repoURL: https://github.com/DaltonBuilds/homelab-gitops
     targetRevision: main
