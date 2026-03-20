@@ -38,3 +38,5 @@ spec:
       kind: HTTPRoute 
     - group: storage.k8s.io
       kind: StorageClass
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
