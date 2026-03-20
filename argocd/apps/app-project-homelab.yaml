@@ -11,8 +11,9 @@ spec:
   sourceRepos:
     - https://github.com/DaltonBuilds/homelab-gitops
     - https://charts.jetstack.io
-    - https://metallb.github.io/metallb
     - https://charts.external-secrets.io
+    - https://helm.cilium.io
+    - https://helm.releases.hashicorp.com
   destinations:
     - server: https://kubernetes.default.svc
       namespace: "*"
@@ -23,9 +24,15 @@ spec:
       kind: ClusterIssuer
     - group: external-secrets.io
       kind: ClusterSecretStore
-    - group: metallb.io
-      kind: IPAddressPool
-    - group: metallb.io
-      kind: L2Advertisement
+    - group: cilium.io
+      kind: CiliumLoadBalancerIPPool
+    - group: cilium.io
+      kind: CiliumL2AnnouncementPolicy
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+    - group: gateway.networking.k8s.io
+      kind: GatewayClass
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute 
     - group: storage.k8s.io
       kind: StorageClass
