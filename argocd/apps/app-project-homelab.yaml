@@ -10,6 +10,7 @@ spec:
   description: Homelab GitOps project
   sourceRepos:
     - https://github.com/DaltonBuilds/homelab-gitops
+    - https://github.com/kubernetes-sigs/gateway-api
     - https://charts.jetstack.io
     - https://charts.external-secrets.io
     - https://helm.cilium.io
