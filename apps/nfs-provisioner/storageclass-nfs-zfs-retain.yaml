@@ -2,13 +2,15 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: nfs-zfs-delete
+  name: nfs-zfs-retain
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
 provisioner: cluster.local/nfs-subdir-external-provisioner
 parameters:
   server: 192.168.40.51
   share: /tank/k8s
   pathPattern: "${.PVC.namespace}/${.PVC.name}"
-reclaimPolicy: Delete
+reclaimPolicy: Retain
 allowVolumeExpansion: true
 mountOptions:
   - nfsvers=4.1
