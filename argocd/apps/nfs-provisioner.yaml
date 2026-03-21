@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/DaltonBuilds/homelab-gitops
     path: apps/nfs-provisioner
-    targetRevision: HEAD
+    targetRevision: main
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:

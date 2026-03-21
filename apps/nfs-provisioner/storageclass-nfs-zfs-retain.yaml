@@ -5,11 +5,11 @@ metadata:
   name: nfs-zfs-retain
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
-provisioner: cluster.local/nfs-subdir-external-provisioner
+provisioner: nfs.csi.k8s.io
 parameters:
   server: 192.168.40.51
   share: /tank/k8s
-  pathPattern: "${.PVC.namespace}/${.PVC.name}"
+  subDir: "${pvc.metadata.namespace}/${pvc.metadata.name}"
 reclaimPolicy: Retain
 allowVolumeExpansion: true
 mountOptions:

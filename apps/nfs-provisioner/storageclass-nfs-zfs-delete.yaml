@@ -3,11 +3,11 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: nfs-zfs-delete
-provisioner: cluster.local/nfs-subdir-external-provisioner
+provisioner: nfs.csi.k8s.io
 parameters:
   server: 192.168.40.51
   share: /tank/k8s
-  pathPattern: "${.PVC.namespace}/${.PVC.name}"
+  subDir: "${pvc.metadata.namespace}/${pvc.metadata.name}"
 reclaimPolicy: Delete
 allowVolumeExpansion: true
 mountOptions:
