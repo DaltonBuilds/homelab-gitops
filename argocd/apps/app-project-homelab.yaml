@@ -50,4 +50,6 @@ spec:
     - group: admissionregistration.k8s.io
       kind: MutatingWebhookConfiguration
     - group: admissionregistration.k8s.io
+      kind: ValidatingAdmissionPolicy
+    - group: admissionregistration.k8s.io
       kind: ValidatingAdmissionPolicyBinding
