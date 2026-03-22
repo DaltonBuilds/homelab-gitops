@@ -11,12 +11,15 @@ spec:
   source:
     repoURL: https://github.com/kubernetes-sigs/gateway-api
     path: config/crd/standard
-    targetRevision: v1.5.1
+    # Pinned to v1.2.1 due to Cilium 1.19.1 bug (cilium/cilium#44920):
+    # v1.5.x standard channel includes TLSRoute at v1, but Cilium hardcodes
+    # v1alpha2 and crashes. Upgrade back to v1.5.x when Cilium patches this.
+    targetRevision: v1.2.1
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
-      prune: false # Disabled to prevent breaking Gateway resources
+      prune: false 
       selfHeal: true
     syncOptions:
       - ServerSideApply=true
