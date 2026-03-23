@@ -15,8 +15,9 @@ spec:
     helm:
       releaseName: argocd
       values: |
-        server:
-          insecure: true
+        configs:
+          params:
+            server.insecure: true
         controller:
           metrics:
             enabled: true
