@@ -8,7 +8,6 @@ spec:
   parentRefs:
     - name: homelab-gateway
       namespace: gateway
-      sectionName: http
   hostnames:
     - argocd.daltonbuilds.com
   rules:
