@@ -5,6 +5,7 @@ resources:
   - infrastructure/sources.yaml
   - infrastructure/external-secrets/helmrelease.yaml
   - infrastructure/external-secrets/cluster-secret-store.yaml
-  - infrastructure/external-secrets/externalsecret.yaml
+  - infrastructure/external-secrets/externalsecret-grafana.yaml
+  - infrastructure/external-secrets/externalsecret-garage.yaml
   - infrastructure/prometheus/helmrelease.yaml
   - infrastructure/loki/helmrelease.yaml
