@@ -9,7 +9,13 @@ data:
     tunnel: 04f31324-e66c-4f25-98cc-2d3548d8ba2c 
     credentials-file: /etc/cloudflared/creds/credentials.json
     metrics: 0.0.0.0:2000
+    originRequest:
+      noTLSVerify: true
+      originServerName: gateway.daltonbuilds.com
     ingress:
       - hostname: "*.daltonbuilds.com"
-        service: http://cilium-gateway-homelab-gateway.gateway.svc.cluster.local
+        service: https://cilium-gateway-homelab-gateway.gateway.svc.cluster.local
+        originRequest:
+          noTLSVerify: true
+          originServerName: gateway.daltonbuilds.com
       - service: http_status:404
