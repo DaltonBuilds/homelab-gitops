@@ -11,7 +11,5 @@ data:
     metrics: 0.0.0.0:2000
     ingress:
       - hostname: "*.daltonbuilds.com"
-        service: https://cilium-gateway-homelab-gateway.gateway.svc.cluster.local
-        originRequest:
-          noTLSVerify: true
+        service: http://cilium-gateway-homelab-gateway.gateway.svc.cluster.local
       - service: http_status:404

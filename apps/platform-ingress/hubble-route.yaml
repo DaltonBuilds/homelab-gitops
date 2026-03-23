@@ -8,6 +8,7 @@ spec:
   parentRefs:
     - name: homelab-gateway
       namespace: gateway
+      sectionName: http
   hostnames:
     - hubble.daltonbuilds.com
   rules:
