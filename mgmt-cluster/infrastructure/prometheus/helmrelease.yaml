@@ -1,0 +1,60 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 1h
+  valuesFrom:
+    - kind: Secret
+      name: grafana-admin-secret
+      valuesKey: adminPassword
+      targetPath: grafana.adminPassword
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+  values:
+    prometheus:
+      prometheusSpec:
+        retention: 15d
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 500m
+          limits:
+            memory: 4Gi
+        
+        # Scrape workload cluster node-exporters
+        additionalScrapeConfigs:
+          
+          - job_name: 'workload-nodes'
+            static_configs:
+              - targets:
+                  - '192.168.40.30:9100'  # gandalf
+                  - '192.168.40.31:9100'  # aragorn
+                  - '192.168.40.32:9100'  # legolas
+                  - '192.168.40.33:9100'  # gimli
+                  - '192.168.40.51:9100'  # nfs-server
+          
+          - job_name: 'garage'
+            static_configs:
+              - targets:
+                  - '192.168.40.53:3903' # garage
+    
+    grafana:
+      persistence:
+        enabled: true
+        size: 5Gi
+
+    alertmanager:
+      alertmanagerSpec:
+        resources:
+          requests:
+            memory: 256Mi
+          limits:
+            memory: 512Mi
