@@ -47,6 +47,14 @@ spec:
               - targets:
                   - '192.168.40.53:3903' # garage
     
+    # Disable chart's node-exporter — mgmt-plane already runs
+    # prometheus-node-exporter via apt (installed by Ansible common.yaml).
+    # Both bind host port 9100, causing a conflict.
+    nodeExporter:
+      enabled: false
+    prometheus-node-exporter:
+      enabled: false
+
     grafana:
       persistence:
         enabled: true

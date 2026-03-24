@@ -32,9 +32,12 @@ spec:
         retention_period: 720h
       storage:
         type: s3
+        bucketNames:
+          chunks: loki-chunks
+          ruler: loki-chunks
+          admin: loki-chunks
         s3:
           endpoint: http://192.168.40.53:3900
-          bucketnames: loki-chunks
           region: garage
           s3ForcePathStyle: true
     singleBinary:
