@@ -18,6 +18,7 @@ spec:
     - ghcr.io/argoproj/argo-helm
     - quay.io/cilium/charts
     - https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+    - https://grafana.github.io/helm-charts
   destinations:
     - server: https://kubernetes.default.svc
       namespace: "*"

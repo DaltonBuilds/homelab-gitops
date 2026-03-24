@@ -1,0 +1,33 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  project: homelab
+  # Multi-source: Helm chart from Grafana + values file from this repo.
+  # The $values ref lets valueFiles reference paths in the Git source.
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: alloy
+      targetRevision: "0.12.0"  # Verify latest: helm search repo grafana/alloy
+      helm:
+        releaseName: alloy
+        valueFiles:
+          - $values/apps/monitoring/alloy/values.yaml
+    - repoURL: https://github.com/DaltonBuilds/homelab-gitops
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

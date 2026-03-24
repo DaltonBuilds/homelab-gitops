@@ -1,0 +1,161 @@
+---
+alloy:
+  configMap:
+    create: true
+    content: |
+      // ── LOG COLLECTION ───────────────────────────────────────────────────────
+      //
+      // Discover pods scheduled on this node only. Running as a DaemonSet means
+      // one Alloy pod per node, so filtering by spec.nodeName prevents every
+      // replica from tailing every pod in the cluster.
+      //
+      // NODE_NAME is injected from spec.nodeName via the downward API
+      // (see controller.extraEnv below).
+      discovery.kubernetes "pods" {
+        role = "pod"
+
+        selectors {
+          role  = "pod"
+          field = "spec.nodeName=" + env("NODE_NAME")
+        }
+      }
+
+      // Attach stream labels from Kubernetes metadata so Loki queries can
+      // filter by namespace, pod, container, or app name.
+      // The static "cluster=fellowship" label identifies the source in
+      // multi-cluster Grafana views alongside the mgmt-plane's own logs.
+      discovery.relabel "pod_logs" {
+        targets = discovery.kubernetes.pods.targets
+
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          target_label  = "container"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+          target_label  = "app"
+        }
+        rule {
+          target_label = "cluster"
+          replacement  = "fellowship"
+        }
+      }
+
+      // Tail pod logs via the Kubernetes API. This is preferable to reading
+      // /var/log/pods directly because it handles log rotation, compressed
+      // logs, and multi-container pods automatically with no host mounts needed.
+      loki.source.kubernetes "pods" {
+        targets    = discovery.relabel.pod_logs.output
+        forward_to = [loki.write.mgmt_loki.receiver]
+      }
+
+      // Push logs to Loki on mgmt-plane.
+      // Port 3100 is the Loki HTTP listener (default; set in the Loki HelmRelease).
+      loki.write "mgmt_loki" {
+        endpoint {
+          url = "http://192.168.40.52:3100/loki/api/v1/push"
+        }
+      }
+
+      // ── METRICS COLLECTION ───────────────────────────────────────────────────
+      //
+      // node_exporter (port 9100) on each workload node is already scraped
+      // directly by mgmt Prometheus via additionalScrapeConfigs — no need to
+      // duplicate that here. Alloy covers the in-cluster metrics that are not
+      // reachable from outside: cAdvisor container resource metrics exposed by
+      // the kubelet, accessible only through the API server proxy.
+
+      // Discover all nodes for kubelet cAdvisor scraping.
+      discovery.kubernetes "nodes" {
+        role = "node"
+      }
+
+      // Route cAdvisor scrapes through the API server proxy so we do not need
+      // direct access to kubelet port 10250 from the mgmt-plane.
+      // __address__ is set to the in-cluster API server; __metrics_path__ is
+      // constructed per-node using the node name from metadata.
+      discovery.relabel "cadvisor" {
+        targets = discovery.kubernetes.nodes.targets
+
+        rule {
+          target_label = "__address__"
+          replacement  = "kubernetes.default.svc.cluster.local:443"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_node_name"]
+          regex         = "(.+)"
+          target_label  = "__metrics_path__"
+          replacement   = "/api/v1/nodes/$1/proxy/metrics/cadvisor"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_node_name"]
+          target_label  = "node"
+        }
+        rule {
+          target_label = "cluster"
+          replacement  = "fellowship"
+        }
+      }
+
+      // Scrape container resource metrics (CPU, memory, network I/O) from
+      // kubelet's cAdvisor endpoint. The SA token and CA are mounted
+      // automatically into every pod by Kubernetes.
+      // insecure_skip_verify is acceptable here because we are connecting to
+      // the in-cluster API server via its stable DNS name.
+      prometheus.scrape "cadvisor" {
+        targets    = discovery.relabel.cadvisor.output
+        forward_to = [prometheus.remote_write.mgmt_prometheus.receiver]
+
+        job_name        = "cadvisor"
+        scheme          = "https"
+        scrape_interval = "60s"
+
+        authorization {
+          credentials_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+        }
+
+        tls_config {
+          ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+          insecure_skip_verify = true
+        }
+      }
+
+      // Remote-write scraped metrics to Prometheus on mgmt-plane.
+      // IMPORTANT: Prometheus must be started with --web.enable-remote-write-receiver.
+      // In the kube-prometheus-stack HelmRelease, set:
+      //   prometheus.prometheusSpec.enableRemoteWriteReceiver: true
+      prometheus.remote_write "mgmt_prometheus" {
+        endpoint {
+          url = "http://192.168.40.52:9090/api/v1/write"
+        }
+      }
+
+controller:
+  type: DaemonSet
+
+  # Inject the node name so the River config can filter pod discovery
+  # to only the node this DaemonSet replica is running on.
+  extraEnv:
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+
+# The chart creates a ClusterRole with permissions for service discovery.
+# loki.source.kubernetes additionally requires pods/log (get) to stream
+# container logs via the API. This is included in the chart's default rules
+# as of alloy chart v0.9+. If scraping cAdvisor through the API proxy returns
+# 403s, verify that nodes/proxy is in the ClusterRole.
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
