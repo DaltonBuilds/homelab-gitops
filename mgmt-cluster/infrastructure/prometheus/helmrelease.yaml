@@ -52,6 +52,26 @@ spec:
         enabled: true
         size: 5Gi
 
+      # Prometheus is auto-provisioned by kube-prometheus-stack's sidecar.
+      # Loki and Alertmanager are separate deployments and must be added here.
+      additionalDataSources:
+        - name: Loki
+          type: loki
+          url: http://loki.monitoring.svc.cluster.local:3100
+          access: proxy
+          isDefault: false
+          jsonData:
+            maxLines: 1000
+            timeout: 60
+
+        - name: Alertmanager
+          type: alertmanager
+          url: http://kube-prometheus-stack-alertmanager.monitoring.svc.cluster.local:9093
+          access: proxy
+          jsonData:
+            # Must be "prometheus" — this is Prometheus Alertmanager, not Grafana-managed alerts.
+            implementation: prometheus
+
     alertmanager:
       alertmanagerSpec:
         resources:
