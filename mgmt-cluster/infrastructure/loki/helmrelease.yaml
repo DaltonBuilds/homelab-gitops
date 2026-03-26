@@ -24,6 +24,18 @@ spec:
         namespace: flux-system
   values:
     deploymentMode: SingleBinary
+
+    # Loki chart v6.x defaults read/write/backend to non-zero replicas for
+    # SimpleScalable mode. Chart validation rejects having both singleBinary
+    # and SimpleScalable components with replicas > 0, so zero them out
+    # explicitly when using SingleBinary mode.
+    read:
+      replicas: 0
+    write:
+      replicas: 0
+    backend:
+      replicas: 0
+
     loki:
       auth_enabled: false
       commonConfig:
