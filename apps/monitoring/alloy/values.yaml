@@ -57,11 +57,13 @@ alloy:
         forward_to = [loki.write.mgmt_loki.receiver]
       }
 
-      // Push logs to Loki on mgmt-plane.
-      // Port 3100 is the Loki HTTP listener (default; set in the Loki HelmRelease).
+      // Push logs to Loki on mgmt-plane via the gateway NodePort.
+      // Port 30100 is the Loki gateway NodePort (gateway.service.nodePort in the
+      // Loki HelmRelease). The ClusterIP service is not routable from outside
+      // the mgmt cluster, so we must use the NodePort on the node IP.
       loki.write "mgmt_loki" {
         endpoint {
-          url = "http://192.168.40.52:3100/loki/api/v1/push"
+          url = "http://192.168.40.52:30100/loki/api/v1/push"
         }
       }
 
@@ -128,13 +130,13 @@ alloy:
         }
       }
 
-      // Remote-write scraped metrics to Prometheus on mgmt-plane.
-      // IMPORTANT: Prometheus must be started with --web.enable-remote-write-receiver.
-      // In the kube-prometheus-stack HelmRelease, set:
-      //   prometheus.prometheusSpec.enableRemoteWriteReceiver: true
+      // Remote-write scraped metrics to Prometheus on mgmt-plane via NodePort.
+      // Port 30090 is the Prometheus NodePort (prometheus.service.nodePort in the
+      // kube-prometheus-stack HelmRelease). The receiver is enabled via
+      // enableRemoteWriteReceiver: true in prometheusSpec.
       prometheus.remote_write "mgmt_prometheus" {
         endpoint {
-          url = "http://192.168.40.52:9090/api/v1/write"
+          url = "http://192.168.40.52:30090/api/v1/write"
         }
       }
 
