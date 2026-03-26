@@ -48,3 +48,14 @@ spec:
           cpu: 250m
         limits:
           memory: 2Gi
+
+    # Expose Loki's HTTP push/query API outside the mgmt cluster so Alloy
+    # on the workload cluster can reach it at 192.168.40.52:30100.
+    # The gateway is an nginx proxy that routes /loki/api/v1/push (and reads)
+    # to the single-binary pod. NodePort 30100 is stable in the k3s default
+    # range (30000–32767) and doesn't conflict with other services.
+    gateway:
+      enabled: true
+      service:
+        type: NodePort
+        nodePort: 30100

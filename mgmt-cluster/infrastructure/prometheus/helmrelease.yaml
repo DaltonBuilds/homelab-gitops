@@ -20,6 +20,14 @@ spec:
         namespace: flux-system
   values:
     prometheus:
+      # Expose the Prometheus HTTP API (including remote-write receiver) at
+      # 192.168.40.52:30090 so Alloy on the workload cluster can push metrics.
+      # NodePort 30090 is in the k3s default range; the receiver is enabled via
+      # enableRemoteWriteReceiver below.
+      service:
+        type: NodePort
+        nodePort: 30090
+
       prometheusSpec:
         enableRemoteWriteReceiver: true
         retention: 15d
