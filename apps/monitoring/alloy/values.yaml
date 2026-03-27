@@ -130,6 +130,52 @@ alloy:
         }
       }
 
+      // ── KUBE-STATE-METRICS ─────────────────────────────────────────────────
+      //
+      // kube-state-metrics exposes Kubernetes object state (pod phase, resource
+      // requests/limits, deployment replicas, etc.) that the Grafana Kubernetes
+      // compute resource dashboards rely on. Without this, dashboards like
+      // "Kubernetes / Compute Resources / Namespace (Pods)" show no workload
+      // cluster data — only the mgmt cluster's own kube-state-metrics is visible.
+      //
+      // We scrape it in-cluster (ClusterIP is fine — Alloy runs in the same
+      // cluster) and remote-write to mgmt Prometheus with a cluster=fellowship
+      // label so dashboards can distinguish workload vs mgmt metrics.
+
+      discovery.kubernetes "ksm" {
+        role = "service"
+
+        namespaces {
+          names = ["monitoring"]
+        }
+
+        selectors {
+          role  = "service"
+          label = "app.kubernetes.io/name=kube-state-metrics"
+        }
+      }
+
+      discovery.relabel "ksm" {
+        targets = discovery.kubernetes.ksm.targets
+
+        rule {
+          target_label = "cluster"
+          replacement  = "fellowship"
+        }
+
+        rule {
+          target_label = "job"
+          replacement  = "kube-state-metrics"
+        }
+      }
+
+      prometheus.scrape "ksm" {
+        targets         = discovery.relabel.ksm.output
+        forward_to      = [prometheus.remote_write.mgmt_prometheus.receiver]
+        job_name        = "kube-state-metrics"
+        scrape_interval = "60s"
+      }
+
       // Remote-write scraped metrics to Prometheus on mgmt-plane via NodePort.
       // Port 30090 is the Prometheus NodePort (prometheus.service.nodePort in the
       // kube-prometheus-stack HelmRelease). The receiver is enabled via
