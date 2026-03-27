@@ -64,6 +64,8 @@ spec:
       enabled: false
 
     grafana:
+      initChownData:
+        enabled: false
       persistence:
         enabled: true
         size: 5Gi
