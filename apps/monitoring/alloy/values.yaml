@@ -187,7 +187,7 @@ alloy:
       }
 
 controller:
-  type: DaemonSet
+  type: daemonset
 
   # Inject the node name so the River config can filter pod discovery
   # to only the node this DaemonSet replica is running on.
