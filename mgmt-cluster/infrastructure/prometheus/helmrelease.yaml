@@ -6,6 +6,7 @@ metadata:
   namespace: monitoring
 spec:
   interval: 1h
+  timeout: 15m
   valuesFrom:
     - kind: Secret
       name: grafana-admin-secret
@@ -64,6 +65,8 @@ spec:
       enabled: false
 
     grafana:
+      initChownData:
+        enabled: false
       persistence:
         enabled: true
         size: 5Gi
