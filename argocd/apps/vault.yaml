@@ -9,7 +9,7 @@ metadata:
 spec:
   project: homelab
   source:
-    repoURL: oci://registry-1.docker.io/bitnamicharts
+    repoURL: oci://registry-1.docker.io/bitnamicharts/vault
     chart: vault
     targetRevision: 1.9.0
     helm:

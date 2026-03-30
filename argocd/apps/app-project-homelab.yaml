@@ -14,7 +14,7 @@ spec:
     - https://charts.jetstack.io
     - https://charts.external-secrets.io
     - https://helm.cilium.io
-    - oci://registry-1.docker.io/bitnamicharts
+    - oci://registry-1.docker.io/bitnamicharts/vault
     - ghcr.io/argoproj/argo-helm
     - quay.io/cilium/charts
     - https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
