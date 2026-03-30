@@ -69,3 +69,6 @@ yarn-error.log*
 # --- GCP Secret Manager ---
 sa-key.json
 credentials.json
+
+# --- Vault ---
+vault-init.json
